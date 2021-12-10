@@ -1,0 +1,19 @@
+{
+    "description": "Command Line Interface based thumbnail generators for Neos Media",
+    "type": "neos-package",
+    "name": "neosrulez/neos-media-clithumbnailgenerator",
+    "require": {
+        "neos/media": "*",
+        "mikehaertl/php-shellcommand": "1.6.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "NeosRulez\\Neos\\Media\\CliThumbnailGenerator\\": "Classes/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "NeosRulez.Neos.Media.CliThumbnailGenerator"
+        }
+    }
+}
