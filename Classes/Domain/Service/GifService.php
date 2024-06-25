@@ -8,19 +8,20 @@ namespace NeosRulez\Neos\Media\CliThumbnailGenerator\Domain\Service;
 use Neos\Flow\Annotations as Flow;
 use mikehaertl\shellcommand\Command;
 
-class DocumentService
+class GifService
 {
 
     /**
      * @param string $temporaryLocalCopyFilename
      * @param string $fileName
-     * @param int $resolution
+     * @param int $width
+     * @param int $height
      * @return string
      */
-    public function processDocument(string $temporaryLocalCopyFilename, string $fileName, int $resolution):string
+    public function processImage(string $temporaryLocalCopyFilename, string $fileName, int $width, int $height): string
     {
-        $convertedFile = FLOW_PATH_TEMPORARY_BASE . '/' . $fileName . '.png';
-        $command = new Command('convert -density 60 ' . $temporaryLocalCopyFilename . '[0] -quality 90 -background white -alpha background -alpha off -resize ' . $resolution . 'x ' . $convertedFile);
+        $convertedFile = FLOW_PATH_TEMPORARY_BASE . '/' . $fileName;
+        $command = new Command('convert ' . $temporaryLocalCopyFilename . ' -coalesce -resize ' . $width . 'x' . $height . ' -layers optimize -loop 0 ' . $convertedFile);
         if (!$command->execute()) {
             return $command->getError();
         } else {

@@ -18,8 +18,6 @@ composer require neosrulez/neos-media-clithumbnailgenerator
 Neos:
   Media:
     thumbnailGenerators:
-      Neos\Media\Domain\Model\ThumbnailGenerator\DocumentThumbnailGenerator:
-        disable: true # Disable the Default Document Thumbnail Generator
       NeosRulez\Neos\Media\CliThumbnailGenerator\Domain\Model\ThumbnailGenerator\DocumentThumbnailGenerator:
         resolution: 120
         supportedExtensions:
@@ -28,7 +26,9 @@ Neos:
           - ai
         paginableDocuments:
           - pdf
-
+      NeosRulez\Neos\Media\CliThumbnailGenerator\Domain\Model\ThumbnailGenerator\GifThumbnailGenerator:
+        supportedExtensions:
+          - gif
 ```
 
 ## Author

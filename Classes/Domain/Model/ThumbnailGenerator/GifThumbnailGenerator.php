@@ -6,23 +6,25 @@ namespace NeosRulez\Neos\Media\CliThumbnailGenerator\Domain\Model\ThumbnailGener
  */
 
 use Neos\Flow\Annotations as Flow;
+use Neos\Media\Domain\Model\Image;
+use Neos\Media\Domain\Model\ImageInterface;
 use Neos\Media\Domain\Model\ThumbnailGenerator\AbstractThumbnailGenerator;
 use Neos\Media\Domain\Model\Document;
 use Neos\Media\Domain\Model\Thumbnail;
 use Neos\Media\Exception;
-use NeosRulez\Neos\Media\CliThumbnailGenerator\Domain\Service\DocumentService;
+use NeosRulez\Neos\Media\CliThumbnailGenerator\Domain\Service\GifService;
 
 /**
- * A system-generated preview version of a Document (PDF, AI and EPS)
+ * A Thumbnailgenerator that force Imagick cli for animated Gif
  */
-class DocumentThumbnailGenerator extends AbstractThumbnailGenerator
+class GifThumbnailGenerator extends AbstractThumbnailGenerator
 {
 
     /**
-     * @var DocumentService
+     * @var GifService
      * @Flow\Inject
      */
-    protected $documentService;
+    protected $gifService;
 
     /**
      * The priority for this thumbnail generator.
@@ -30,7 +32,7 @@ class DocumentThumbnailGenerator extends AbstractThumbnailGenerator
      * @var integer
      * @api
      */
-    protected static $priority = 5;
+    protected static $priority = 6;
 
     /**
      * @param Thumbnail $thumbnail
@@ -38,10 +40,7 @@ class DocumentThumbnailGenerator extends AbstractThumbnailGenerator
      */
     public function canRefresh(Thumbnail $thumbnail): bool
     {
-        return (
-            $thumbnail->getOriginalAsset() instanceof Document &&
-            $this->isExtensionSupported($thumbnail)
-        );
+        return $this->isExtensionSupported($thumbnail);
     }
 
     /**
@@ -52,14 +51,13 @@ class DocumentThumbnailGenerator extends AbstractThumbnailGenerator
     public function refresh(Thumbnail $thumbnail): void
     {
         try {
-            $filenameWithoutExtension = pathinfo($thumbnail->getOriginalAsset()->getResource()->getFilename(), PATHINFO_FILENAME);
-
-            $temporaryLocalCopyFilename = $thumbnail->getOriginalAsset()->getResource()->createTemporaryLocalCopy();
-
             $width = $thumbnail->getConfigurationValue('width') ?: $thumbnail->getConfigurationValue('maximumWidth');
             $height = $thumbnail->getConfigurationValue('height') ?: $thumbnail->getConfigurationValue('maximumHeight');
 
-            $convertedFile = $this->documentService->processDocument($temporaryLocalCopyFilename, rawurlencode($filenameWithoutExtension), $this->getOption('resolution'));
+            $temporaryLocalCopyFilename = $thumbnail->getOriginalAsset()->getResource()->createTemporaryLocalCopy();
+            $fileName = str_replace(('.' . $thumbnail->getOriginalAsset()->getResource()->getFileExtension()), '', $thumbnail->getOriginalAsset()->getResource()->getFilename()) . '-' . $width . 'x' . $height . '.' . $thumbnail->getOriginalAsset()->getResource()->getFileExtension();
+
+            $convertedFile = $this->gifService->processImage($temporaryLocalCopyFilename, $fileName, $width, $height);
 
             $resource = $this->resourceManager->importResource($convertedFile);
             $thumbnail->setResource($resource);
@@ -69,7 +67,7 @@ class DocumentThumbnailGenerator extends AbstractThumbnailGenerator
         } catch (\Exception $exception) {
             $filename = $thumbnail->getOriginalAsset()->getResource()->getFilename();
             $sha1 = $thumbnail->getOriginalAsset()->getResource()->getSha1();
-            $message = sprintf('Unable to generate thumbnail for the given document (filename: %s, SHA1: %s)', $filename, $sha1);
+            $message = sprintf('Unable to generate thumbnail for the given gif (filename: %s, SHA1: %s)', $filename, $sha1);
             throw new Exception\NoThumbnailAvailableException($message, 1433109652, $exception);
         }
     }

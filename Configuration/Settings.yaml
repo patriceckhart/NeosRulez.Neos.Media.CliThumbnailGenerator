@@ -1,11 +1,14 @@
-Neos:
-  Media:
-    thumbnailGenerators:
-      NeosRulez\Neos\Media\CliThumbnailGenerator\Domain\Model\ThumbnailGenerator\DocumentThumbnailGenerator:
-        resolution: 120
-        supportedExtensions:
-          - pdf
-          - eps
-          - ai
-        paginableDocuments:
-          - pdf
+#Neos:
+#  Media:
+#    thumbnailGenerators:
+#      NeosRulez\Neos\Media\CliThumbnailGenerator\Domain\Model\ThumbnailGenerator\DocumentThumbnailGenerator:
+#        resolution: 120
+#        supportedExtensions:
+#          - pdf
+#          - eps
+#          - ai
+#        paginableDocuments:
+#          - pdf
+#      NeosRulez\Neos\Media\CliThumbnailGenerator\Domain\Model\ThumbnailGenerator\GifThumbnailGenerator:
+#        supportedExtensions:
+#          - gif
