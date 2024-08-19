@@ -15,18 +15,21 @@ class GifService
      * @param string $temporaryLocalCopyFilename
      * @param string $fileName
      * @param int $width
-     * @param int $height
+     * @param int|null $height
      * @return string
      */
-    public function processImage(string $temporaryLocalCopyFilename, string $fileName, int $width, int $height): string
+    public function processImage(string $temporaryLocalCopyFilename, string $fileName, int $width, int|null $height = null): string
     {
         $convertedFile = FLOW_PATH_TEMPORARY_BASE . '/' . $fileName;
-        $command = new Command('convert ' . $temporaryLocalCopyFilename . ' -coalesce -resize ' . $width . 'x' . $height . ' -layers optimize -loop 0 ' . $convertedFile);
+        if($height !== null) {
+            $command = new Command('convert ' . $temporaryLocalCopyFilename . ' -coalesce -resize ' . $width . 'x' . $height . ' -layers optimize -loop 0 ' . $convertedFile);
+        } else {
+            $command = new Command('convert ' . $temporaryLocalCopyFilename . ' -coalesce -resize ' . $width . ' -layers optimize -loop 0 ' . $convertedFile);
+        }
         if (!$command->execute()) {
             return $command->getError();
-        } else {
-            return $convertedFile;
         }
+        return $convertedFile;
     }
 
 }
